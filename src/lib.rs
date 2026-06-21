@@ -3,6 +3,8 @@ use iced::{
     widget::{button, column, container, row, scrollable, text, text_input},
 };
 
+mod tree;
+
 #[derive(Clone)]
 pub enum Message {
     A(Size),
@@ -11,13 +13,14 @@ pub enum Message {
     Up,
     Refresh,
     FolderSelected(usize),
+    ToggleFolder(Vec<usize>),
     FileSelected(usize),
     PathChanged(String),
 }
 
 pub struct Account {
-    path: String,
-    folders: Vec<String>,
+    pub path: String,
+    root: Vec<tree::Node>,
     files: Vec<SubItem>,
 }
 
@@ -30,9 +33,9 @@ struct SubItem {
 impl Account {
     #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
-        Self {
+        let mut res = Self {
             path: "/home/stewart".into(),
-            folders: vec!["Documents".into(), "Downloads".into(), "Pictures".into()],
+            root: vec![],
             files: vec![
                 SubItem {
                     name: "file1.txt".into(),
@@ -45,6 +48,46 @@ impl Account {
                     kind: "image".into(),
                 },
             ],
+        };
+
+        let coa = vec![
+            vec!["Assets", "Fixed Assets", "Building"],
+            vec!["Assets", "Fixed Assets", "Equipment"],
+            vec!["Assets", "Current Assets", "Cash"],
+            vec!["Assets", "Current Assets", "Accounts Receivable"],
+            vec!["Liabilities", "Current Liabilities", "Accounts Payable"],
+        ];
+
+        for row in &coa {
+            res.insert(row);
+        }
+
+        res
+    }
+    fn insert(&mut self, row: &[&str]) {
+        if row.is_empty() {
+            return;
+        }
+
+        let root_pos = if let Some(pos) = self.root.iter().position(|n| n.name == row[0]) {
+            pos
+        } else {
+            self.root.push(tree::Node::new(row[0]));
+            self.root.len() - 1
+        };
+
+        let mut curr_root_node = &mut self.root[root_pos];
+        for name in &row[1..] {
+            curr_root_node = curr_root_node.get_or_insert(name);
+        }
+    }
+    pub fn toggle_folder(&mut self, row: &[usize]) {
+        if row.is_empty() {
+            return;
+        }
+
+        if let Some(root) = self.root.get_mut(row[0]) {
+            root.toggle(&row[1..]);
         }
     }
     pub fn view(&self) -> Element<'_, Message> {
@@ -61,9 +104,8 @@ impl Account {
         .spacing(5);
         // content ui
         let mut folder_col = column![];
-        for (i, folder) in self.folders.iter().enumerate() {
-            folder_col =
-                folder_col.push(button(folder.as_str()).on_press(Message::FolderSelected(i)));
+        for (i, node) in self.root.iter().enumerate() {
+            folder_col = folder_col.push(node.view(vec![i], 0));
         }
         let folder_panel = scrollable(folder_col).width(250);
 

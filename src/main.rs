@@ -34,6 +34,10 @@ impl App {
             Message::Up => todo!(),
             Message::Refresh => todo!(),
             Message::FolderSelected(_) => todo!(),
+            Message::ToggleFolder(x) => {
+                self.account.toggle_folder(&x);
+                Task::none()
+            }
             Message::FileSelected(_) => todo!(),
             Message::PathChanged(_) => todo!(),
         }
