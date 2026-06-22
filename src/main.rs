@@ -1,6 +1,7 @@
 use iced::{
-    Element, Subscription, Task, Theme,
-    widget::{button, column, container, row},
+    Element, Length, Task, Theme, event,
+    keyboard::Key,
+    widget::{button, column, container, mouse_area, row, stack},
     window,
 };
 
@@ -31,12 +32,10 @@ impl App {
     }
     // fn subscription(&self) -> Subscription<Message> {
     //     window::resize_events().map(|(_id, size)| Message::A(size))
+    //     event::listen().map(Message::EventOccurred)
     // }
     fn update(&mut self, msg: Message) -> Task<Message> {
         match msg {
-            Message::A(size) => {
-                println!("{:?}", size);
-            }
             Message::Back => {
                 println!("back icon");
             }
@@ -67,6 +66,9 @@ impl App {
                     _ => Some(menu),
                 };
             }
+            Message::CloseMenu => {
+                self.curr_menu = None;
+            }
             Message::New => {
                 self.curr_menu = None;
                 println!("new");
@@ -88,35 +90,102 @@ impl App {
             Message::CollapseAll => {
                 self.curr_menu = None;
             }
+            Message::A(size) => {
+                println!("{:?}", size);
+            }
+            Message::EventOccurred(x) => {
+                if let event::Event::Keyboard(iced::keyboard::Event::KeyPressed { key, .. }) = x
+                    && let Key::Character(res) = key
+                {
+                    println!("key {res}");
+                }
+            }
         }
         Task::none()
     }
     fn view(&self) -> Element<'_, Message> {
+        const MENU_BTN_WIDTH: f32 = 60.0;
         let menubar = row![
-            button("File").on_press(Message::ToggleMenu(fa3::MenuKind::File)),
-            button("Edit").on_press(Message::ToggleMenu(fa3::MenuKind::Edit)),
-            button("View").on_press(Message::ToggleMenu(fa3::MenuKind::View)),
+            button("File")
+                .on_press(Message::ToggleMenu(fa3::MenuKind::File))
+                .width(Length::Fixed(MENU_BTN_WIDTH)),
+            button("Edit")
+                .on_press(Message::ToggleMenu(fa3::MenuKind::Edit))
+                .width(Length::Fixed(MENU_BTN_WIDTH)),
+            button("View")
+                .on_press(Message::ToggleMenu(fa3::MenuKind::View))
+                .width(Length::Fixed(MENU_BTN_WIDTH)),
         ]
-        .spacing(5);
+        .spacing(5)
+        .padding([4, 10]);
 
-        let menu = match self.curr_menu {
-            Some(fa3::MenuKind::File) => column![
-                button("New").on_press(Message::New),
-                button("Open").on_press(Message::Open),
-                button("Save").on_press(Message::Save),
-                button("Exit").on_press(Message::Exit),
-            ]
-            .spacing(2),
-            Some(fa3::MenuKind::Edit) => column![button("Rename"), button("Delete"),].spacing(2),
-            Some(fa3::MenuKind::View) => column![
-                button("Expand All").on_press(Message::ExpandAll),
-                button("Collapse All").on_press(Message::CollapseAll),
-            ]
-            .spacing(2),
-            None => column![],
+        let base = column![menubar, self.account.view()];
+
+        let Some(menu_kind) = self.curr_menu else {
+            return base.into();
         };
 
-        column![menubar, container(menu).padding(5), self.account.view()].into()
+        let items: Vec<Element<'_, Message>> = match menu_kind {
+            fa3::MenuKind::File => vec![
+                button("New")
+                    .on_press(Message::New)
+                    .width(Length::Fill)
+                    .into(),
+                button("Open")
+                    .on_press(Message::Open)
+                    .width(Length::Fill)
+                    .into(),
+                button("Save")
+                    .on_press(Message::Save)
+                    .width(Length::Fill)
+                    .into(),
+                button("Exit")
+                    .on_press(Message::Exit)
+                    .width(Length::Fill)
+                    .into(),
+            ],
+            fa3::MenuKind::Edit => vec![
+                button("Rename").width(Length::Fill).into(),
+                button("Delete").width(Length::Fill).into(),
+            ],
+            fa3::MenuKind::View => vec![
+                button("Expand All")
+                    .on_press(Message::ExpandAll)
+                    .width(Length::Fill)
+                    .into(),
+                button("Collapse All")
+                    .on_press(Message::CollapseAll)
+                    .width(Length::Fill)
+                    .into(),
+            ],
+        };
+
+        let mut menu_col = column![].spacing(2).width(Length::Fixed(160.0));
+        for item in items {
+            menu_col = menu_col.push(item);
+        }
+
+        const ROW_PADDING: f32 = 10.0;
+        const BTN_STRIDE: f32 = MENU_BTN_WIDTH + 5.0;
+
+        let left_offset = match menu_kind {
+            fa3::MenuKind::File => ROW_PADDING,
+            fa3::MenuKind::Edit => ROW_PADDING + BTN_STRIDE,
+            fa3::MenuKind::View => ROW_PADDING + BTN_STRIDE * 2.0,
+        };
+
+        let dropdown = container(column![
+            container("").height(Length::Fixed(36.0)),
+            row![
+                container("").width(Length::Fixed(left_offset)),
+                container(menu_col).padding(4).style(container::rounded_box),
+            ]
+        ]);
+
+        let closeoff = mouse_area(container("").width(Length::Fill).height(Length::Fill))
+            .on_press(Message::CloseMenu);
+
+        stack![base, closeoff, dropdown].into()
     }
 }
 

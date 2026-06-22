@@ -1,8 +1,9 @@
-use crate::Message;
 use iced::{
     Element,
     widget::{button, column, container, row, text},
 };
+
+use crate::Message;
 
 pub struct Node {
     pub name: String,
@@ -53,7 +54,7 @@ impl Node {
                 .align_y(iced::Alignment::Center),
         )
         .on_press(Message::ToggleFolder(path.clone()))
-        .padding([3, 6])
+        .padding([1, 6])
         .width(iced::Length::Fill)
         .style(button::text);
 
@@ -62,13 +63,13 @@ impl Node {
             row_label,
         ];
 
-        let mut col = column![row_with_indent];
+        let mut col = column![row_with_indent].spacing(0);
 
         if self.expanded {
             for (i, child) in self.children.iter().enumerate() {
                 let mut child_path = path.clone();
                 child_path.push(i);
-                col = col.push(container(child.view(child_path, depth + 1)).padding(10));
+                col = col.push(child.view(child_path, depth + 1));
             }
         }
 

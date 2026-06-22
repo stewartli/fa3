@@ -7,10 +7,12 @@ use iced::{
 
 mod tree;
 
+const SIZE_COL: f32 = 70.0;
+const TYPE_COL: f32 = 70.0;
+const _FONT_SIZE: i32 = 14;
+
 #[derive(Clone)]
 pub enum Message {
-    // window
-    A(Size),
     // toolbar
     Back,
     Forward,
@@ -22,12 +24,16 @@ pub enum Message {
     PathChanged(String),
     // menu
     ToggleMenu(MenuKind),
+    CloseMenu,
     New,
     Open,
     Save,
     Exit,
     ExpandAll,
     CollapseAll,
+    // key
+    A(Size),
+    EventOccurred(iced::Event),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -124,17 +130,16 @@ impl Account {
         .spacing(6)
         .padding([8, 10])
         .align_y(iced::Alignment::Center);
+
         // content ui
         let mut folder_col = column![].spacing(2);
         for (i, node) in self.root.iter().enumerate() {
             folder_col = folder_col.push(node.view(vec![i], 0));
         }
+
         let folder_panel = container(scrollable(folder_col).width(iced::Length::Fill))
             .width(FillPortion(1))
             .padding(8);
-
-        const SIZE_COL: f32 = 70.0;
-        const TYPE_COL: f32 = 70.0;
 
         let header = row![
             text("Name").size(14).width(iced::Length::Fill),
@@ -160,8 +165,10 @@ impl Account {
             .padding(8);
 
         let content = row![folder_panel, rule::vertical(1), file_panel].height(iced::Length::Fill);
+
         // statusbar ui
         let statusbar = row![text(format!("{} items", self.files.len())).size(13)].padding([6, 10]);
+
         // final ui
         column![
             toolbar,
