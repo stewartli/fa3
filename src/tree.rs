@@ -1,7 +1,7 @@
 use crate::Message;
 use iced::{
     Element,
-    widget::{button, column, container, text},
+    widget::{button, column, container, row, text},
 };
 
 pub struct Node {
@@ -47,10 +47,22 @@ impl Node {
             "▶"
         };
 
-        let mut col = column![
-            button(text(format!("{icon} {}", self.name)))
-                .on_press(Message::ToggleFolder(path.clone()))
+        let row_label = button(
+            row![text(icon).size(13).width(16), text(&self.name).size(14),]
+                .spacing(4)
+                .align_y(iced::Alignment::Center),
+        )
+        .on_press(Message::ToggleFolder(path.clone()))
+        .padding([3, 6])
+        .width(iced::Length::Fill)
+        .style(button::text);
+
+        let row_with_indent = row![
+            container("").width(iced::Length::Fixed(depth as f32 * 16.0)),
+            row_label,
         ];
+
+        let mut col = column![row_with_indent];
 
         if self.expanded {
             for (i, child) in self.children.iter().enumerate() {

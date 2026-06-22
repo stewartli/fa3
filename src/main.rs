@@ -116,15 +116,7 @@ impl App {
             None => column![],
         };
 
-        column![
-            menubar,
-            container(menu).padding(5),
-            self.account.view(),
-            container("Account Tree")
-                .width(iced::Length::Fill)
-                .height(iced::Length::Fill),
-        ]
-        .into()
+        column![menubar, container(menu).padding(5), self.account.view()].into()
     }
 }
 

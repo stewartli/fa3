@@ -1,6 +1,8 @@
 use iced::{
-    Element, Size,
-    widget::{button, column, container, row, scrollable, text, text_input},
+    Element,
+    Length::FillPortion,
+    Size,
+    widget::{button, column, container, row, rule, scrollable, text, text_input},
 };
 
 mod tree;
@@ -110,35 +112,64 @@ impl Account {
     pub fn view(&self) -> Element<'_, Message> {
         // toolbar ui
         let toolbar = row![
-            button("←").on_press(Message::Back),
-            button("→").on_press(Message::Forward),
-            button("↑").on_press(Message::Up),
-            button("⟳").on_press(Message::Refresh),
+            button("←").on_press(Message::Back).padding([4, 10]),
+            button("→").on_press(Message::Forward).padding([4, 10]),
+            button("↑").on_press(Message::Up).padding([4, 10]),
+            button("⟳").on_press(Message::Refresh).padding([4, 10]),
             text_input("path", &self.path)
                 .on_input(Message::PathChanged)
+                .padding(6)
                 .width(iced::Length::Fill),
         ]
-        .spacing(5);
+        .spacing(6)
+        .padding([8, 10])
+        .align_y(iced::Alignment::Center);
         // content ui
-        let mut folder_col = column![];
+        let mut folder_col = column![].spacing(2);
         for (i, node) in self.root.iter().enumerate() {
             folder_col = folder_col.push(node.view(vec![i], 0));
         }
-        let folder_panel = scrollable(folder_col).width(250);
+        let folder_panel = container(scrollable(folder_col).width(iced::Length::Fill))
+            .width(FillPortion(1))
+            .padding(8);
 
-        let mut file_col = column![];
+        const SIZE_COL: f32 = 70.0;
+        const TYPE_COL: f32 = 70.0;
+
+        let header = row![
+            text("Name").size(14).width(iced::Length::Fill),
+            text("Size").size(14).width(SIZE_COL),
+            text("Type").size(14).width(TYPE_COL),
+        ]
+        .padding([4, 6]);
+
+        let mut file_col = column![header, rule::horizontal(1)].spacing(2);
         for file in &self.files {
-            file_col = file_col.push(row![
-                text(&file.name).width(iced::Length::Fill),
-                text(file.size.to_string()),
-                text(&file.kind),
-            ]);
+            file_col = file_col.push(
+                row![
+                    text(&file.name).size(14).width(iced::Length::Fill),
+                    text(file.size.to_string()).size(14).width(SIZE_COL),
+                    text(&file.kind).size(14).width(TYPE_COL),
+                ]
+                .padding([4, 6]),
+            );
         }
-        let file_panel = container(scrollable(file_col)).width(iced::Length::Fill);
-        let content = row![folder_panel, file_panel,].height(iced::Length::Fill);
+
+        let file_panel = container(scrollable(file_col).width(iced::Length::Fill))
+            .width(FillPortion(2))
+            .padding(8);
+
+        let content = row![folder_panel, rule::vertical(1), file_panel].height(iced::Length::Fill);
         // statusbar ui
-        let statusbar = row![text(format!("{} items", self.files.len()))];
+        let statusbar = row![text(format!("{} items", self.files.len())).size(13)].padding([6, 10]);
         // final ui
-        column!(toolbar, content, statusbar).into()
+        column![
+            toolbar,
+            rule::horizontal(1),
+            content,
+            rule::horizontal(1),
+            statusbar,
+        ]
+        .into()
     }
 }
