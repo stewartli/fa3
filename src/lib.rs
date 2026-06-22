@@ -7,7 +7,9 @@ mod tree;
 
 #[derive(Clone)]
 pub enum Message {
+    // window
     A(Size),
+    // toolbar
     Back,
     Forward,
     Up,
@@ -16,6 +18,21 @@ pub enum Message {
     ToggleFolder(Vec<usize>),
     FileSelected(usize),
     PathChanged(String),
+    // menu
+    ToggleMenu(MenuKind),
+    New,
+    Open,
+    Save,
+    Exit,
+    ExpandAll,
+    CollapseAll,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MenuKind {
+    File,
+    Edit,
+    View,
 }
 
 pub struct Account {
