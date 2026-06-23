@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 iced = { version = "0.14.0", features = [] }
 csv = "1.4.0"
+serde_json = "1.0.150"

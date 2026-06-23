@@ -5,11 +5,20 @@ use iced::{
 
 use crate::Message;
 
+#[derive(Clone, Copy, PartialEq, Eq, Default)]
+pub enum ReconStatus {
+    #[default]
+    NotChecked,
+    Passed,
+    Failed,
+}
+
 pub struct Node {
     pub name: String,
     pub children: Vec<Node>,
     pub expanded: bool,
     pub value: Option<f64>,
+    pub recon_status: ReconStatus,
 }
 
 impl Node {
@@ -19,6 +28,7 @@ impl Node {
             children: vec![],
             expanded: false,
             value: None,
+            recon_status: ReconStatus::NotChecked,
         }
     }
     pub fn get_or_insert(&mut self, name: &str) -> &mut Self {
@@ -44,6 +54,12 @@ impl Node {
             return Some(self);
         }
         self.children.get(row[0])?.get(&row[1..])
+    }
+    pub fn get_mut(&mut self, row: &[usize]) -> Option<&mut Self> {
+        if row.is_empty() {
+            return Some(self);
+        }
+        self.children.get_mut(row[0])?.get_mut(&row[1..])
     }
     pub fn total_value(&self) -> f64 {
         if self.children.is_empty() {
@@ -75,6 +91,15 @@ impl Node {
         self.expanded = false;
         for child in &mut self.children {
             child.collapse_all();
+        }
+    }
+    pub fn leaf_names(&self, out: &mut Vec<String>) {
+        if self.children.is_empty() {
+            out.push(self.name.clone());
+            return;
+        }
+        for child in &self.children {
+            child.leaf_names(out);
         }
     }
     #[allow(clippy::only_used_in_recursion)]

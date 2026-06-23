@@ -43,7 +43,7 @@ impl App {
                 println!("forward icon");
             }
             Message::Up => {
-                println!("up icon");
+                self.account.reconcile_selected();
             }
             Message::Refresh => {
                 self.account.collapse_all();
