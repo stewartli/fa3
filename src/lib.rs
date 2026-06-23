@@ -49,6 +49,7 @@ pub struct Account {
     root: Vec<tree::Node>,
     files: Vec<SubItem>,
     selected: Option<Vec<usize>>,
+    num: usize,
 }
 
 struct SubItem {
@@ -62,23 +63,11 @@ impl Account {
     #[allow(clippy::new_without_default)]
     pub fn new(path: &str) -> Result<Self, csv::Error> {
         let mut res = Self {
-            path: "/home/stewart".into(),
+            path: String::new(),
             root: vec![],
-            files: vec![
-                SubItem {
-                    name: "file1.txt".into(),
-                    amt: 100.0,
-                    kind: "file".into(),
-                    n_child: 0,
-                },
-                SubItem {
-                    name: "photo.jpg".into(),
-                    amt: 2000.0,
-                    kind: "image".into(),
-                    n_child: 1,
-                },
-            ],
+            files: vec![],
             selected: None,
+            num: 0,
         };
 
         let mut reader = csv::ReaderBuilder::new()
@@ -94,6 +83,7 @@ impl Account {
                 .filter(|field| !field.is_empty())
                 .collect();
             res.insert(&row);
+            res.num += 1;
         }
 
         Ok(res)
@@ -193,7 +183,7 @@ impl Account {
             button("→").on_press(Message::Forward).padding([4, 10]),
             button("↑").on_press(Message::Up).padding([4, 10]),
             button("⟳").on_press(Message::Refresh).padding([4, 10]),
-            text_input("path", &self.path)
+            text_input("query account", &self.path)
                 .on_input(Message::PathChanged)
                 .padding(6)
                 .width(iced::Length::Fill),
@@ -244,7 +234,7 @@ impl Account {
             text(format!(
                 "{} items / {} accounts",
                 self.files.len(),
-                self.root.len()
+                self.num,
             ))
             .size(13)
         ]
