@@ -19,7 +19,6 @@ impl Node {
             expanded: true,
         }
     }
-    #[allow(unused)]
     pub fn get_or_insert(&mut self, name: &str) -> &mut Self {
         if let Some(pos) = self.children.iter().position(|n| n.name == name) {
             return &mut self.children[pos];

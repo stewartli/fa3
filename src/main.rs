@@ -15,7 +15,7 @@ struct App {
 impl App {
     fn new() -> Self {
         Self {
-            account: Account::new(),
+            account: Account::new("asset/coa.csv").unwrap(),
             curr_menu: None,
         }
     }

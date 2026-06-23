@@ -1,0 +1,107 @@
+COA,FS,TB,Account,Subaccount,CF
+Asset,Balance Sheet,Current Assets,Accounts Receivable,Accounts Receivable,32333.08 
+Expense,Income Statement,Operating Expenses,Advertising Expense,Advertising Expense,2000.00 
+Liability,Balance Sheet,Long-Term Liabilities,Auto Loan,Auto Loan,0.00 
+Asset,Balance Sheet,Fixed Assets,Automobiles & Trucks,Automobiles & Trucks,45632.00 
+Expense,Income Statement,Operating Expenses,Bank Service Charges,Bank Service Charges,0.00 
+Expense,Income Statement,Operating Expenses,Business License & Fees,Business License & Fees,710.23 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Car Lease,6756.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Car/Truck Expense,0.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Car/Truck Expense - Other,0.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Gas,907.64 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Insurance-Auto,1440.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Mileage,0.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Registration & License,546.00 
+Expense,Income Statement,Operating Expenses,Car/Truck Expense,Repairs & Maintenance,1700.23 
+Asset,Balance Sheet,Current Assets,Company Checking Account,Company Checking Account,90154.32 
+Asset,Balance Sheet,Current Assets,Company Savings Account,Company Savings Account,25000.00 
+Asset,Balance Sheet,Fixed Assets,Computer & Office Equipment,Computer & Office Equipment,19453.00 
+Expense,Income Statement,Operating Expenses,Conferences and Seminars,Conferences and Seminars,4700.00 
+Expense,Income Statement,Operating Expenses,Contributions,Contributions,2500.00 
+Liability,Balance Sheet,Current Liabilities,Customer Deposits,Customer Deposits,3500.00 
+Expense,Income Statement,Operating Expenses,Depreciation Expense,Depreciation Expense,923.04 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Direct Labor,Direct Labor,0.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Direct Labor,Direct Labor - Other,0.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Direct Labor,Wages - Sales-Inside,2500.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Direct Labor,Wages - Warehouse,19705.00 
+Expense,Income Statement,Operating Expenses,Dues and Subscriptions,Dues and Subscriptions,1900.00 
+Asset,Balance Sheet,Current Assets,Employee Advances,Employee Advances,0.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Freight Costs,Freight Costs,1810.00 
+Expense,Income Statement,Operating Expenses,Insurance,Disability Insurance,0.00 
+Expense,Income Statement,Operating Expenses,Insurance,General Liability Insurance,2760.00 
+Expense,Income Statement,Operating Expenses,Insurance,Insurance,0.00 
+Expense,Income Statement,Operating Expenses,Insurance,Insurance - Other,0.00 
+Expense,Income Statement,Operating Expenses,Insurance,Life Insurance,0.00 
+Expense,Income Statement,Operating Expenses,Insurance,Owner's Health Insurance,4272.00 
+Expense,Income Statement,Operating Expenses,Insurance,Professional Liability Insuranc,6875.00 
+Expense,Income Statement,Operating Expenses,Insurance,Worker's Compensation,2782.08 
+Asset,Balance Sheet,Current Assets,Inventory Asset,Inventory Asset,46126.05 
+Liability,Balance Sheet,Long-Term Liabilities,Line of Credit,Line of Credit,-104618.08 
+Asset,Balance Sheet,Fixed Assets,Machinery & Equipment,Machinery & Equipment,25963.00 
+Expense,Income Statement,Operating Expenses,Maintenance/Janitorial,Maintenance/Janitorial,2841.95 
+Expense,Income Statement,Operating Expenses,Marketing Expense,Marketing Expense,4982.00 
+Expense,Income Statement,Operating Expenses,Meals and Entertainment,Meals and Entertainment,1376.35 
+Income,Income Statement,Revenue,Misc. Revenue,Misc. Revenue,0.00 
+Unclassified,Unclassified,Unclassified,No accnt,No accnt,0.00 
+Asset,Balance Sheet,Fixed Assets,Office Equipment,Office Equipment,1100.00 
+Other Expense,Income Statement,Other Income/Expense,Other Expense,Interest Expense,2296.45 
+Other Expense,Income Statement,Other Income/Expense,Other Expense,Other Expense,0.00 
+Other Expense,Income Statement,Other Income/Expense,Other Expense,Other Expense - Other,0.00 
+Other Income,Income Statement,Other Income/Expense,Other Income,Early Payment Discounts,0.00 
+Other Income,Income Statement,Other Income/Expense,Other Income,Interest Income,0.00 
+Other Income,Income Statement,Other Income/Expense,Other Income,Other Income,0.00 
+Other Income,Income Statement,Other Income/Expense,Other Income,Other Income - Other,0.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Packaging Materials,Packaging Materials,1752.50 
+Expense,Income Statement,Operating Expenses,Payroll Clearing (owner's time),Payroll Clearing (owner's time),0.00 
+Expense,Income Statement,Operating Expenses,Payroll Expenses,Payroll Expenses,0.00 
+Asset,Balance Sheet,Current Assets,Petty Cash Account,Petty Cash Account,500.00 
+Expense,Income Statement,Operating Expenses,Postage and Delivery,Postage and Delivery,1098.00 
+Asset,Balance Sheet,Current Assets,Prepaids,Prepaid Insurance,0.00 
+Asset,Balance Sheet,Current Assets,Prepaids,Prepaid Taxes,800.00 
+Asset,Balance Sheet,Current Assets,Prepaids,Prepaids,0.00 
+Asset,Balance Sheet,Current Assets,Prepaids,Prepaids - Other,0.00 
+Expense,Income Statement,Operating Expenses,Printing and Reproduction,Printing and Reproduction,0.00 
+Expense,Income Statement,Operating Expenses,Professional Development,Professional Development,0.00 
+Expense,Income Statement,Operating Expenses,Professional Fees,Accounting Fees,2544.00 
+Expense,Income Statement,Operating Expenses,Professional Fees,Legal Fees,600.00 
+Expense,Income Statement,Operating Expenses,Professional Fees,Payroll Service Fees,1529.24 
+Expense,Income Statement,Operating Expenses,Professional Fees,Professional Fees,0.00 
+Expense,Income Statement,Operating Expenses,Professional Fees,Professional Fees - Other,0.00 
+Expense,Income Statement,Operating Expenses,Promotional Expense,Promotional Expense,2021.00 
+Cost of Goods Sold,Income Statement,Cost of Goods Sold,Purchases  (Cost of Goods),Purchases  (Cost of Goods),179961.75 
+Liability,Balance Sheet,Current Liabilities,QuickBooks Credit Card,QuickBooks Credit Card,-1249.12 
+Expense,Income Statement,Operating Expenses,Rent,Rent,7005.00 
+Expense,Income Statement,Operating Expenses,Repairs,Computer Repairs,390.00 
+Expense,Income Statement,Operating Expenses,Repairs,Equipment Repairs,0.00 
+Expense,Income Statement,Operating Expenses,Repairs,Repairs,0.00 
+Expense,Income Statement,Operating Expenses,Repairs,Repairs - Other,0.00 
+Asset,Balance Sheet,Current Assets,Security Deposits,Security Deposits,1200.00 
+Expense,Income Statement,Operating Expenses,Supplies,Supplies,6199.36 
+Expense,Income Statement,Operating Expenses,Telephone,Telephone,4003.44 
+Expense,Income Statement,Operating Expenses,Travel,Travel,3452.23 
+Asset,Balance Sheet,Current Assets,Undeposited Funds,Undeposited Funds,0.00 
+Expense,Income Statement,Operating Expenses,Utilities,Utilities,501.59 
+Expense,Income Statement,Operating Expenses,Vendor Refunds,Vendor Refunds,0.00 
+Expense,Income Statement,Operating Expenses,Wages,Employee Benefits,2253.96 
+Expense,Income Statement,Operating Expenses,Wages,Employee Bonus,0.00 
+Expense,Income Statement,Operating Expenses,Wages,Payroll Tax Expenses,4608.57 
+Expense,Income Statement,Operating Expenses,Wages,Sick/Holiday & Vacation Pay,0.00 
+Expense,Income Statement,Operating Expenses,Wages,Wages,0.00 
+Expense,Income Statement,Operating Expenses,Wages,Wages - Office Staff,6312.00 
+Expense,Income Statement,Operating Expenses,Wages,Wages - Other,0.00 
+Equity,Balance Sheet,Equity,Deborah Wood Equity,Deborah Wood Draws,135000.00 
+Equity,Balance Sheet,Equity,Deborah Wood Equity,Deborah Wood Equity,0.00 
+Equity,Balance Sheet,Equity,Deborah Wood Equity,Deborah Wood Equity - Other,0.00 
+Equity,Balance Sheet,Equity,Deborah Wood Equity,Deborah Wood Investment,0.00 
+Equity,Balance Sheet,Equity,Deborah Wood Equity,Deborah Wood's Time to Jobs,0.00 
+Equity,Balance Sheet,Equity,Opening Bal Equity,Opening Bal Equity,-44324.80 
+Equity,Balance Sheet,Equity,Retained Earnings,Retained Earnings,-148723.27 
+Liability,Balance Sheet,Current Liabilities,Accounts Payable,Accounts Payable,-16697.30 
+Asset,Balance Sheet,Fixed Assets,Accumulated Depreciation,Accumulated Depreciation,-923.04 
+Liability,Balance Sheet,Current Liabilities,Payroll Liabilities,401K Payable,0.00 
+Liability,Balance Sheet,Current Liabilities,Payroll Liabilities,Payroll Liabilities,0.00 
+Liability,Balance Sheet,Current Liabilities,Payroll Liabilities,Payroll Liabilities - Other,0.00 
+Liability,Balance Sheet,Current Liabilities,Payroll Liabilities,Payroll Taxes Payable,-2873.72 
+Liability,Balance Sheet,Current Liabilities,Payroll Liabilities,SEC125 Payable,-50.00 
+Income,Income Statement,Revenue,Revenue,Revenue,-411809.53 
+Expense,Income Statement,Operating Expenses,Sales Commission (outside reps),Sales Commission (outside reps),3990.80 

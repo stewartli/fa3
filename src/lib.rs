@@ -57,7 +57,7 @@ struct SubItem {
 
 impl Account {
     #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    pub fn new(path: &str) -> Result<Self, csv::Error> {
         let mut res = Self {
             path: "/home/stewart".into(),
             root: vec![],
@@ -75,19 +75,22 @@ impl Account {
             ],
         };
 
-        let coa = vec![
-            vec!["Assets", "Fixed Assets", "Building"],
-            vec!["Assets", "Fixed Assets", "Equipment"],
-            vec!["Assets", "Current Assets", "Cash"],
-            vec!["Assets", "Current Assets", "Accounts Receivable"],
-            vec!["Liabilities", "Current Liabilities", "Accounts Payable"],
-        ];
+        let mut reader = csv::ReaderBuilder::new()
+            .has_headers(true)
+            .flexible(true)
+            .from_path(path)?;
 
-        for row in &coa {
-            res.insert(row);
+        for x in reader.records() {
+            let record = x?;
+            let row: Vec<&str> = record
+                .iter()
+                .map(str::trim)
+                .filter(|field| !field.is_empty())
+                .collect();
+            res.insert(&row);
         }
 
-        res
+        Ok(res)
     }
     fn insert(&mut self, row: &[&str]) {
         if row.is_empty() {
