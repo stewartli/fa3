@@ -7,9 +7,9 @@ use iced::{
 
 mod tree;
 
-const SIZE_COL: f32 = 70.0;
 const TYPE_COL: f32 = 70.0;
 const CHILD_COL: f32 = 60.0;
+const SIZE_COL: f32 = 70.0;
 const _FONT_SIZE: i32 = 14;
 
 #[derive(Clone)]
@@ -53,9 +53,9 @@ pub struct Account {
 
 struct SubItem {
     name: String,
-    amt: f64,
     kind: String,
     n_child: usize,
+    amt: f64,
 }
 
 impl Account {
@@ -128,24 +128,63 @@ impl Account {
             root.toggle(&row[1..]);
         }
 
-        let node = self.root.get(row[0]).and_then(|root| root.get(&row[1..]));
+        self.select_path(row.to_vec());
+    }
+    fn select_path(&mut self, path: Vec<usize>) {
+        let node = path
+            .first()
+            .and_then(|&i| self.root.get(i))
+            .and_then(|root| root.get(&path[1..]));
 
-        if let Some(node) = node {
-            let kind = if node.children.is_empty() {
-                "child"
-            } else {
-                "parent"
-            };
+        let Some(node) = node else {
+            self.selected = Some(path);
+            return;
+        };
 
-            self.files = vec![SubItem {
-                name: node.name.clone(),
-                amt: node.total_value(),
-                kind: kind.into(),
-                n_child: node.children.len(),
-            }];
+        let mut rows = vec![Self::row_for(node)];
+        for child in &node.children {
+            rows.push(Self::row_for(child));
+        }
+        self.files = rows;
+        self.selected = Some(path);
+    }
+    fn row_for(node: &tree::Node) -> SubItem {
+        let kind = if node.children.is_empty() {
+            "Account"
+        } else {
+            "Parent"
+        };
+        SubItem {
+            name: node.name.clone(),
+            kind: kind.into(),
+            n_child: node.children.len(),
+            amt: node.total_value(),
+        }
+    }
+    pub fn search(&mut self, query: &str) {
+        self.path = query.to_string();
+        let query = query.to_lowercase();
+        if query.is_empty() {
+            return;
         }
 
-        self.selected = Some(row.to_vec());
+        for (i, root) in self.root.iter().enumerate() {
+            if let Some(mut sub_path) = root.find_path(&query) {
+                sub_path.insert(0, i);
+                if let Some(root) = self.root.get_mut(i) {
+                    root.expand_path(&sub_path[1..]);
+                }
+                self.select_path(sub_path);
+                return;
+            }
+        }
+    }
+    pub fn collapse_all(&mut self) {
+        for root in &mut self.root {
+            root.collapse_all();
+        }
+        self.selected = None;
+        self.files = vec![];
     }
     pub fn view(&self) -> Element<'_, Message> {
         // toolbar ui
@@ -201,7 +240,15 @@ impl Account {
         let content = row![folder_panel, rule::vertical(1), file_panel].height(iced::Length::Fill);
 
         // statusbar ui
-        let statusbar = row![text(format!("{} items", self.files.len())).size(13)].padding([6, 10]);
+        let statusbar = row![
+            text(format!(
+                "{} items / {} accounts",
+                self.files.len(),
+                self.root.len()
+            ))
+            .size(13)
+        ]
+        .padding([6, 10]);
 
         // final ui
         column![

@@ -17,7 +17,7 @@ impl Node {
         Self {
             name: name.into(),
             children: vec![],
-            expanded: true,
+            expanded: false,
             value: None,
         }
     }
@@ -50,6 +50,32 @@ impl Node {
             return self.value.unwrap_or(0.0);
         }
         self.children.iter().map(Node::total_value).sum()
+    }
+    pub fn find_path(&self, query: &str) -> Option<Vec<usize>> {
+        if self.name.to_lowercase().contains(query) {
+            return Some(vec![]);
+        }
+        for (i, child) in self.children.iter().enumerate() {
+            if let Some(mut sub_path) = child.find_path(query) {
+                sub_path.insert(0, i);
+                return Some(sub_path);
+            }
+        }
+        None
+    }
+    pub fn expand_path(&mut self, path: &[usize]) {
+        self.expanded = true;
+        if let Some((&first, rest)) = path.split_first()
+            && let Some(child) = self.children.get_mut(first)
+        {
+            child.expand_path(rest);
+        }
+    }
+    pub fn collapse_all(&mut self) {
+        self.expanded = false;
+        for child in &mut self.children {
+            child.collapse_all();
+        }
     }
     #[allow(clippy::only_used_in_recursion)]
     pub fn view(&self, path: Vec<usize>, depth: usize) -> Element<'_, Message> {

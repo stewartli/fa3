@@ -9,14 +9,14 @@ use fa3::{Account, Message};
 
 struct App {
     account: Account,
-    curr_menu: Option<fa3::MenuKind>,
+    menu: Option<fa3::MenuKind>,
 }
 
 impl App {
     fn new() -> Self {
         Self {
             account: Account::new("asset/coa.csv").unwrap(),
-            curr_menu: None,
+            menu: None,
         }
     }
     fn theme(&self) -> Theme {
@@ -46,7 +46,7 @@ impl App {
                 println!("up icon");
             }
             Message::Refresh => {
-                println!("refresh icon");
+                self.account.collapse_all();
             }
             Message::FolderSelected(x) => {
                 println!("folder select {x}");
@@ -58,37 +58,37 @@ impl App {
                 println!("file select {x}");
             }
             Message::PathChanged(x) => {
-                println!("path select {x}");
+                self.account.search(&x);
             }
             Message::ToggleMenu(menu) => {
-                self.curr_menu = match self.curr_menu {
+                self.menu = match self.menu {
                     Some(m) if m == menu => None,
                     _ => Some(menu),
                 };
             }
             Message::CloseMenu => {
-                self.curr_menu = None;
+                self.menu = None;
             }
             Message::New => {
-                self.curr_menu = None;
+                self.menu = None;
                 println!("new");
             }
             Message::Open => {
-                self.curr_menu = None;
+                self.menu = None;
                 println!("open");
             }
             Message::Save => {
-                self.curr_menu = None;
+                self.menu = None;
                 println!("save");
             }
             Message::Exit => {
                 println!("exit");
             }
             Message::ExpandAll => {
-                self.curr_menu = None;
+                self.menu = None;
             }
             Message::CollapseAll => {
-                self.curr_menu = None;
+                self.menu = None;
             }
             Message::A(size) => {
                 println!("{:?}", size);
@@ -121,7 +121,7 @@ impl App {
 
         let base = column![menubar, self.account.view()];
 
-        let Some(menu_kind) = self.curr_menu else {
+        let Some(menu_kind) = self.menu else {
             return base.into();
         };
 
