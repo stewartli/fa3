@@ -1,15 +1,9 @@
 **The App**
-[app look](./asset/)
+![app look](./asset/)
 
 **How to use**
-```
-```
-```
-```
-
-```
+```bash
 ~/duckdb asset/gl.duckdb
-
 
 ```
 
