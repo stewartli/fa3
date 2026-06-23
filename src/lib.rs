@@ -9,6 +9,7 @@ mod tree;
 
 const SIZE_COL: f32 = 70.0;
 const TYPE_COL: f32 = 70.0;
+const CHILD_COL: f32 = 60.0;
 const _FONT_SIZE: i32 = 14;
 
 #[derive(Clone)]
@@ -47,12 +48,14 @@ pub struct Account {
     pub path: String,
     root: Vec<tree::Node>,
     files: Vec<SubItem>,
+    selected: Option<Vec<usize>>,
 }
 
 struct SubItem {
     name: String,
-    size: u64,
+    amt: f64,
     kind: String,
+    n_child: usize,
 }
 
 impl Account {
@@ -64,15 +67,18 @@ impl Account {
             files: vec![
                 SubItem {
                     name: "file1.txt".into(),
-                    size: 100,
+                    amt: 100.0,
                     kind: "file".into(),
+                    n_child: 0,
                 },
                 SubItem {
                     name: "photo.jpg".into(),
-                    size: 2000,
+                    amt: 2000.0,
                     kind: "image".into(),
+                    n_child: 1,
                 },
             ],
+            selected: None,
         };
 
         let mut reader = csv::ReaderBuilder::new()
@@ -104,9 +110,13 @@ impl Account {
             self.root.len() - 1
         };
 
-        let mut curr_root_node = &mut self.root[root_pos];
+        let mut curr_node = &mut self.root[root_pos];
         for name in &row[1..] {
-            curr_root_node = curr_root_node.get_or_insert(name);
+            if let Ok(value) = name.parse::<f64>() {
+                curr_node.value = Some(value);
+                break;
+            }
+            curr_node = curr_node.get_or_insert(name);
         }
     }
     pub fn toggle_folder(&mut self, row: &[usize]) {
@@ -117,6 +127,25 @@ impl Account {
         if let Some(root) = self.root.get_mut(row[0]) {
             root.toggle(&row[1..]);
         }
+
+        let node = self.root.get(row[0]).and_then(|root| root.get(&row[1..]));
+
+        if let Some(node) = node {
+            let kind = if node.children.is_empty() {
+                "child"
+            } else {
+                "parent"
+            };
+
+            self.files = vec![SubItem {
+                name: node.name.clone(),
+                amt: node.total_value(),
+                kind: kind.into(),
+                n_child: node.children.len(),
+            }];
+        }
+
+        self.selected = Some(row.to_vec());
     }
     pub fn view(&self) -> Element<'_, Message> {
         // toolbar ui
@@ -146,8 +175,9 @@ impl Account {
 
         let header = row![
             text("Name").size(14).width(iced::Length::Fill),
-            text("Size").size(14).width(SIZE_COL),
             text("Type").size(14).width(TYPE_COL),
+            text("Child").size(14).width(CHILD_COL),
+            text("Amount").size(14).width(SIZE_COL),
         ]
         .padding([4, 6]);
 
@@ -156,8 +186,9 @@ impl Account {
             file_col = file_col.push(
                 row![
                     text(&file.name).size(14).width(iced::Length::Fill),
-                    text(file.size.to_string()).size(14).width(SIZE_COL),
                     text(&file.kind).size(14).width(TYPE_COL),
+                    text(file.n_child.to_string()).size(14).width(CHILD_COL),
+                    text(format!("{:.2}", file.amt)).size(14).width(SIZE_COL),
                 ]
                 .padding([4, 6]),
             );

@@ -9,6 +9,7 @@ pub struct Node {
     pub name: String,
     pub children: Vec<Node>,
     pub expanded: bool,
+    pub value: Option<f64>,
 }
 
 impl Node {
@@ -17,6 +18,7 @@ impl Node {
             name: name.into(),
             children: vec![],
             expanded: true,
+            value: None,
         }
     }
     pub fn get_or_insert(&mut self, name: &str) -> &mut Self {
@@ -36,6 +38,18 @@ impl Node {
         if let Some(child) = self.children.get_mut(row[0]) {
             child.toggle(&row[1..]);
         }
+    }
+    pub fn get(&self, row: &[usize]) -> Option<&Self> {
+        if row.is_empty() {
+            return Some(self);
+        }
+        self.children.get(row[0])?.get(&row[1..])
+    }
+    pub fn total_value(&self) -> f64 {
+        if self.children.is_empty() {
+            return self.value.unwrap_or(0.0);
+        }
+        self.children.iter().map(Node::total_value).sum()
     }
     #[allow(clippy::only_used_in_recursion)]
     pub fn view(&self, path: Vec<usize>, depth: usize) -> Element<'_, Message> {
