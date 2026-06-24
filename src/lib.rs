@@ -27,9 +27,7 @@ pub enum Message {
     Forward,
     Up,
     Refresh,
-    FolderSelected(usize),
-    ToggleFolder(Vec<usize>),
-    FileSelected(usize),
+    TogglePath(Vec<usize>),
     SearchPath(String),
     // key
     A(iced::Size),

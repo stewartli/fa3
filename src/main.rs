@@ -5,11 +5,16 @@ use iced::{
     window,
 };
 
-use fa3::{Message, account};
+use fa3::{MenuKind, Message, account};
+
+const MENU_BTN_WIDTH: f32 = 60.0;
+const ROW_PADDING: f32 = 10.0;
+const BTN_STRIDE: f32 = MENU_BTN_WIDTH + 5.0;
 
 struct App {
     coa: account::Account,
-    menu: Option<fa3::MenuKind>,
+    menu: Option<MenuKind>,
+    theme: Theme,
 }
 
 impl App {
@@ -17,10 +22,11 @@ impl App {
         Self {
             coa: account::Account::new("asset/coa.csv").unwrap(),
             menu: None,
+            theme: Theme::GruvboxLight,
         }
     }
     fn theme(&self) -> Theme {
-        Theme::GruvboxLight
+        self.theme.clone()
     }
     fn window() -> window::Settings {
         window::Settings {
@@ -47,15 +53,12 @@ impl App {
                 self.menu = None;
             }
             Message::New => {
-                self.menu = None;
                 println!("new");
             }
             Message::Open => {
-                self.menu = None;
                 println!("open");
             }
             Message::Save => {
-                self.menu = None;
                 println!("save");
             }
             Message::Exit => {
@@ -74,11 +77,18 @@ impl App {
                 self.menu = None;
             }
             // toolbar
-            Message::Back => {
-                println!("back icon");
-            }
-            Message::Forward => {
-                println!("forward icon");
+            Message::Back | Message::Forward => {
+                let len = Theme::ALL.len();
+                let idx = Theme::ALL
+                    .iter()
+                    .position(|t| &self.theme == t)
+                    .unwrap_or(0);
+
+                self.theme = if matches!(msg, Message::Back) {
+                    Theme::ALL[(idx + len - 1) % len].clone()
+                } else {
+                    Theme::ALL[(idx + 1) % len].clone()
+                };
             }
             Message::Up => {
                 self.coa.reconcile_selected();
@@ -86,14 +96,8 @@ impl App {
             Message::Refresh => {
                 self.coa.collapse_all();
             }
-            Message::FolderSelected(x) => {
-                println!("folder select {x}");
-            }
-            Message::ToggleFolder(x) => {
+            Message::TogglePath(x) => {
                 self.coa.toggle_folder(&x);
-            }
-            Message::FileSelected(x) => {
-                println!("file select {x}");
             }
             Message::SearchPath(x) => {
                 self.coa.search(&x);
@@ -113,16 +117,15 @@ impl App {
         Task::none()
     }
     fn view(&self) -> Element<'_, Message> {
-        const MENU_BTN_WIDTH: f32 = 60.0;
         let menubar = row![
             button("File")
-                .on_press(Message::OpenMenu(fa3::MenuKind::File))
+                .on_press(Message::OpenMenu(MenuKind::File))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
             button("Edit")
-                .on_press(Message::OpenMenu(fa3::MenuKind::Edit))
+                .on_press(Message::OpenMenu(MenuKind::Edit))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
             button("View")
-                .on_press(Message::OpenMenu(fa3::MenuKind::View))
+                .on_press(Message::OpenMenu(MenuKind::View))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
         ]
         .spacing(5)
@@ -135,7 +138,7 @@ impl App {
         };
 
         let items: Vec<Element<'_, Message>> = match menu_kind {
-            fa3::MenuKind::File => vec![
+            MenuKind::File => vec![
                 button("New")
                     .on_press(Message::New)
                     .width(Length::Fill)
@@ -153,11 +156,17 @@ impl App {
                     .width(Length::Fill)
                     .into(),
             ],
-            fa3::MenuKind::Edit => vec![
-                button("Rename").width(Length::Fill).into(),
-                button("Delete").width(Length::Fill).into(),
+            MenuKind::Edit => vec![
+                button("Rename")
+                    .on_press(Message::Rename)
+                    .width(Length::Fill)
+                    .into(),
+                button("Delete")
+                    .on_press(Message::Delete)
+                    .width(Length::Fill)
+                    .into(),
             ],
-            fa3::MenuKind::View => vec![
+            MenuKind::View => vec![
                 button("Expand All")
                     .on_press(Message::Expand)
                     .width(Length::Fill)
@@ -173,9 +182,6 @@ impl App {
         for item in items {
             menu_col = menu_col.push(item);
         }
-
-        const ROW_PADDING: f32 = 10.0;
-        const BTN_STRIDE: f32 = MENU_BTN_WIDTH + 5.0;
 
         let left_offset = match menu_kind {
             fa3::MenuKind::File => ROW_PADDING,
@@ -194,7 +200,7 @@ impl App {
         let closeoff = mouse_area(container("").width(Length::Fill).height(Length::Fill))
             .on_press(Message::CloseMenu);
 
-        stack![base, closeoff, dropdown].into()
+        stack![base, dropdown, closeoff].into()
     }
 }
 

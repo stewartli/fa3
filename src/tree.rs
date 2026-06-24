@@ -111,7 +111,7 @@ impl Node {
             return out;
         }
         for child in &self.children {
-            child.leaf_names();
+            out.extend(child.leaf_names());
         }
         out
     }
@@ -130,7 +130,7 @@ impl Node {
                 .spacing(4)
                 .align_y(iced::Alignment::Center),
         )
-        .on_press(Message::ToggleFolder(row.clone()))
+        .on_press(Message::TogglePath(row.clone()))
         .padding([1, 6])
         .width(iced::Length::Fill)
         .style(button::text);

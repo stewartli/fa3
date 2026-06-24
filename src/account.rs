@@ -17,7 +17,7 @@ const RECON_TOLERANCE: f64 = 0.01;
 pub struct Account {
     pub path: String,
     root: Vec<tree::Node>,
-    files: Vec<SubItem>,
+    items: Vec<SubItem>,
     selected: Option<Vec<usize>>,
     n_acc: usize,
     recon_message: Option<String>,
@@ -36,7 +36,7 @@ impl Account {
         let mut res = Self {
             path: String::new(),
             root: vec![],
-            files: vec![],
+            items: vec![],
             selected: None,
             n_acc: 0,
             recon_message: None,
@@ -89,7 +89,7 @@ impl Account {
             root.collapse_all();
         }
         self.selected = None;
-        self.files = vec![];
+        self.items = vec![];
     }
     pub fn toggle_folder(&mut self, row: &[usize]) {
         if row.is_empty() {
@@ -118,7 +118,7 @@ impl Account {
         for child in &node.children {
             items.push(Self::item_for(child));
         }
-        self.files = items;
+        self.items = items;
         self.selected = Some(row);
     }
     fn item_for(node: &tree::Node) -> SubItem {
@@ -178,25 +178,16 @@ impl Account {
         let coa_amount = node.total_value();
         let leaf_names = node.leaf_names();
 
-        match recon::reconcile(
-            DB_PATH,
-            UPLOAD_PATH,
-            &account_name,
-            &leaf_names,
-            coa_amount,
-            false,
-        ) {
+        match recon::reconcile(DB_PATH, UPLOAD_PATH, &account_name, &leaf_names) {
             Ok(gl_amount) => {
                 let recon_check = (gl_amount - coa_amount).abs() <= RECON_TOLERANCE;
-                // Re-record with the correct pass/fail now that we know it.
-                let _ = recon::reconcile(
-                    DB_PATH,
-                    UPLOAD_PATH,
-                    &account_name,
-                    &leaf_names,
-                    coa_amount,
-                    recon_check,
-                );
+
+                if let Err(e) =
+                    recon::record_status(DB_PATH, &account_name, coa_amount, gl_amount, recon_check)
+                {
+                    self.recon_message = Some(format!("Reconcile error (status write): {e}"));
+                    return;
+                }
 
                 let node = row
                     .first()
@@ -289,7 +280,7 @@ impl Account {
         .padding([4, 6]);
 
         let mut file_col = column![header, rule::horizontal(1)].spacing(2);
-        for file in &self.files {
+        for file in &self.items {
             let amount_color = match file.recon_status {
                 tree::ReconStatus::NotChecked => None,
                 tree::ReconStatus::Passed => Some(iced::Color::from_rgb(0.0, 0.55, 0.0)),
@@ -321,7 +312,7 @@ impl Account {
         let status_text = self
             .recon_message
             .clone()
-            .unwrap_or_else(|| format!("{} accounts / {} items", self.n_acc, self.files.len()));
+            .unwrap_or_else(|| format!("{} accounts / {} items", self.n_acc, self.items.len()));
 
         let statusbar = row![text(status_text).size(13)].padding([6, 10]);
 
