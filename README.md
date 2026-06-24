@@ -1,11 +1,15 @@
 **The App** 
-![app look](./asset/)
+This tool is used for COA reconciliation during financial audit process. 
+![app look](./asset/pic1.png) 
+![app run](./asset/pic2.png) 
+
 
 **How to use**
 ```bash
 ~/duckdb asset/gl.duckdb
 
 ```
+
 
 **Prerequisite**
 1. `./asset/coa.csv` is generated out of accounting system in the certain `format`. For instance, account can not be named "100".
