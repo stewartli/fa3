@@ -1,7 +1,7 @@
 use iced::{
     Element,
     Length::FillPortion,
-    widget::{button, column, container, row, rule, scrollable, text, text_input},
+    widget::{button, column, container, row, rule, scrollable, text, text_input, tooltip},
 };
 
 use crate::{Message, recon, tree};
@@ -170,6 +170,7 @@ impl Account {
         };
 
         if node.recon_status == tree::ReconStatus::Passed {
+            // TODO: is it necessary?
             self.recon_message = Some(format!("{}: passed (skipped re-check)", node.name));
             return;
         }
@@ -205,7 +206,7 @@ impl Account {
                 self.recon_message = Some(if recon_check {
                     format!("{account_name}: passed (COA {coa_amount:.2} vs GL {gl_amount:.2})")
                 } else {
-                    format!("{account_name}: FAILED (COA {coa_amount:.2} vs GL {gl_amount:.2})")
+                    format!("{account_name}: failed (COA {coa_amount:.2} vs GL {gl_amount:.2})")
                 });
 
                 self.select_path(row);
@@ -286,17 +287,32 @@ impl Account {
                 tree::ReconStatus::Passed => Some(iced::Color::from_rgb(0.0, 0.55, 0.0)),
                 tree::ReconStatus::Failed => Some(iced::Color::from_rgb(0.75, 0.0, 0.0)),
             };
+
             let mut amount_text = text(format!("{:.2}", file.amt)).size(14).width(SIZE_COL);
             if let Some(c) = amount_color {
                 amount_text = amount_text.color(c);
             }
+
+            let amount_cell: Element<'_, Message> =
+                if file.recon_status == tree::ReconStatus::Passed {
+                    tooltip(
+                        amount_text,
+                        container(text(format!("{}: passed", file.name)).size(12))
+                            .padding(6)
+                            .style(container::rounded_box),
+                        tooltip::Position::Top,
+                    )
+                    .into()
+                } else {
+                    amount_text.into()
+                };
 
             file_col = file_col.push(
                 row![
                     text(&file.name).size(14).width(iced::Length::Fill),
                     text(&file.kind).size(14).width(TYPE_COL),
                     text(file.n_child.to_string()).size(14).width(CHILD_COL),
-                    amount_text,
+                    amount_cell,
                 ]
                 .padding([4, 6]),
             );
@@ -309,12 +325,14 @@ impl Account {
         let content = row![folder_panel, rule::vertical(1), file_panel].height(iced::Length::Fill);
 
         // statusbar ui
-        let status_text = self
-            .recon_message
-            .clone()
-            .unwrap_or_else(|| format!("{} accounts / {} items", self.n_acc, self.items.len()));
+        let status_dat = format!("{} accounts / {} items", self.n_acc, self.items.len());
+        let mut status_line = column![text(status_dat).size(13)].spacing(2);
 
-        let statusbar = row![text(status_text).size(13)].padding([6, 10]);
+        if let Some(msg) = &self.recon_message {
+            status_line = status_line.push(text(msg.clone()).size(13));
+        }
+
+        let statusbar = container(status_line).padding([6, 10]);
 
         // final account ui
         column![
