@@ -2,20 +2,22 @@ use std::process::Command;
 
 #[derive(Debug)]
 pub enum ReconError {
-    /// The `duckdb` CLI binary could not be launched at all (not on PATH, etc).
+    // duckdb cli fails to launch (not on PATH, etc)
     Spawn(std::io::Error),
-    /// The `duckdb` CLI ran but returned a non-zero exit status; the
+    // duckdb cli fails to exec
     Cli(String),
-    /// The CLI ran fine but its JSON output wasn't in the shape we expect.
+    // serde_json fails to parse duckdb json output
     Parse(String),
 }
+
+impl std::error::Error for ReconError {}
 
 impl std::fmt::Display for ReconError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ReconError::Spawn(e) => write!(f, "failed to launch duckdb: {e}"),
-            ReconError::Cli(msg) => write!(f, "duckdb error: {msg}"),
-            ReconError::Parse(msg) => write!(f, "could not parse duckdb output: {msg}"),
+            ReconError::Spawn(x) => write!(f, "launch duckdb: {x}"),
+            ReconError::Cli(x) => write!(f, "exec duckdb: {x}"),
+            ReconError::Parse(x) => write!(f, "parse duckdb output: {x}"),
         }
     }
 }
@@ -51,9 +53,9 @@ fn sql_in_list(names: &[String]) -> String {
 
 pub fn reconcile(
     db_path: &str,
+    file_path: &str,
     account: &str,
     leaf_names: &[String],
-    file_path: &str,
     coa_amount: f64,
     passed: bool,
 ) -> Result<f64, ReconError> {

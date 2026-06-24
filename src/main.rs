@@ -5,17 +5,17 @@ use iced::{
     window,
 };
 
-use fa3::{Account, Message};
+use fa3::{Message, account};
 
 struct App {
-    account: Account,
+    coa: account::Account,
     menu: Option<fa3::MenuKind>,
 }
 
 impl App {
     fn new() -> Self {
         Self {
-            account: Account::new("asset/coa.csv").unwrap(),
+            coa: account::Account::new("asset/coa.csv").unwrap(),
             menu: None,
         }
     }
@@ -36,31 +36,8 @@ impl App {
     // }
     fn update(&mut self, msg: Message) -> Task<Message> {
         match msg {
-            Message::Back => {
-                println!("back icon");
-            }
-            Message::Forward => {
-                println!("forward icon");
-            }
-            Message::Up => {
-                self.account.reconcile_selected();
-            }
-            Message::Refresh => {
-                self.account.collapse_all();
-            }
-            Message::FolderSelected(x) => {
-                println!("folder select {x}");
-            }
-            Message::ToggleFolder(x) => {
-                self.account.toggle_folder(&x);
-            }
-            Message::FileSelected(x) => {
-                println!("file select {x}");
-            }
-            Message::PathChanged(x) => {
-                self.account.search(&x);
-            }
-            Message::ToggleMenu(menu) => {
+            // menu
+            Message::OpenMenu(menu) => {
                 self.menu = match self.menu {
                     Some(m) if m == menu => None,
                     _ => Some(menu),
@@ -84,14 +61,46 @@ impl App {
             Message::Exit => {
                 println!("exit");
             }
-            Message::ExpandAll => {
+            Message::Rename => {
+                println!("rename");
+            }
+            Message::Delete => {
+                println!("delete");
+            }
+            Message::Expand => {
                 self.menu = None;
             }
-            Message::CollapseAll => {
+            Message::Collapse => {
                 self.menu = None;
             }
-            Message::A(size) => {
-                println!("{:?}", size);
+            // toolbar
+            Message::Back => {
+                println!("back icon");
+            }
+            Message::Forward => {
+                println!("forward icon");
+            }
+            Message::Up => {
+                self.coa.reconcile_selected();
+            }
+            Message::Refresh => {
+                self.coa.collapse_all();
+            }
+            Message::FolderSelected(x) => {
+                println!("folder select {x}");
+            }
+            Message::ToggleFolder(x) => {
+                self.coa.toggle_folder(&x);
+            }
+            Message::FileSelected(x) => {
+                println!("file select {x}");
+            }
+            Message::SearchPath(x) => {
+                self.coa.search(&x);
+            }
+            // key
+            Message::A(x) => {
+                println!("{:?}", x);
             }
             Message::EventOccurred(x) => {
                 if let event::Event::Keyboard(iced::keyboard::Event::KeyPressed { key, .. }) = x
@@ -107,19 +116,19 @@ impl App {
         const MENU_BTN_WIDTH: f32 = 60.0;
         let menubar = row![
             button("File")
-                .on_press(Message::ToggleMenu(fa3::MenuKind::File))
+                .on_press(Message::OpenMenu(fa3::MenuKind::File))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
             button("Edit")
-                .on_press(Message::ToggleMenu(fa3::MenuKind::Edit))
+                .on_press(Message::OpenMenu(fa3::MenuKind::Edit))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
             button("View")
-                .on_press(Message::ToggleMenu(fa3::MenuKind::View))
+                .on_press(Message::OpenMenu(fa3::MenuKind::View))
                 .width(Length::Fixed(MENU_BTN_WIDTH)),
         ]
         .spacing(5)
         .padding([4, 10]);
 
-        let base = column![menubar, self.account.view()];
+        let base = column![menubar, self.coa.view()];
 
         let Some(menu_kind) = self.menu else {
             return base.into();
@@ -150,11 +159,11 @@ impl App {
             ],
             fa3::MenuKind::View => vec![
                 button("Expand All")
-                    .on_press(Message::ExpandAll)
+                    .on_press(Message::Expand)
                     .width(Length::Fill)
                     .into(),
                 button("Collapse All")
-                    .on_press(Message::CollapseAll)
+                    .on_press(Message::Collapse)
                     .width(Length::Fill)
                     .into(),
             ],
